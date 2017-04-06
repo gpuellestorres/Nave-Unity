@@ -4,9 +4,11 @@ using System.Collections;
 public class ControlNave : MonoBehaviour {
 
     public float fuerzaGravedad = 0.5f;
+
     public float posicionPiso = -3.4f;
     public float fuerzaGiro = 0.5f;
     public float fuerzaCohete = 1;
+    public float maximoFuerzaMovimiento = 1;
 
     public float movimientoX = 0, movimientoY = 0;
 
@@ -40,6 +42,15 @@ public class ControlNave : MonoBehaviour {
         //Aplicamos la gravedad:
         movimientoY -= fuerzaGravedad * tiempoTranscurrido;
 
+        //Verificamos el máximo de fuerza de movimiento:
+        if (movimientoX + movimientoY > maximoFuerzaMovimiento)
+        {
+            float relacion = movimientoX / movimientoY;
+
+            movimientoY = maximoFuerzaMovimiento / (1 + relacion);
+            movimientoX = maximoFuerzaMovimiento - movimientoY;
+        }
+
         //Aplicamos los movimientos resultantes:
         nuevaPosicion.x = nuevaPosicion.x + movimientoX;
         nuevaPosicion.y = nuevaPosicion.y + movimientoY;
@@ -64,11 +75,25 @@ public class ControlNave : MonoBehaviour {
 
     private bool presionandoMotorIzquierdo()
     {
-        return Input.GetKey(KeyCode.A);
+        if (Input.GetKey(KeyCode.A) || Input.GetKey(KeyCode.LeftArrow)) return true;
+
+        foreach (Touch touch in Input.touches)
+        {
+            if (touch.position.x < Screen.width / 3) return true;
+        }
+
+        return false;
     }
 
     private bool presionandoMotorDerecho()
     {
-        return Input.GetKey(KeyCode.D);
+        if (Input.GetKey(KeyCode.D) || Input.GetKey(KeyCode.RightArrow)) return true;
+        
+        foreach (Touch touch in Input.touches)
+        {
+            if (touch.position.x > 2 * Screen.width / 3) return true;
+        }
+
+        return false;
     }
 }
