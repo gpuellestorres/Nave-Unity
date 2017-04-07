@@ -1,5 +1,6 @@
 ﻿using UnityEngine;
 using System.Collections;
+using System;
 
 public class ControlNave : MonoBehaviour {
 
@@ -12,9 +13,15 @@ public class ControlNave : MonoBehaviour {
 
     public float movimientoX = 0, movimientoY = 0;
 
-	// Use this for initialization
-	void Start () {
-	
+    Vector2 posicionInicial;
+
+    public float minimaPosicionX = -20;
+    public float maximaPosicionX = 20;
+    public float maximaPosicionY = 15;
+
+    // Use this for initialization
+    void Start () {
+        posicionInicial = transform.position;
 	}
 	
 	// Update is called once per frame
@@ -61,17 +68,29 @@ public class ControlNave : MonoBehaviour {
         //Aplicamos el giro resultante:
         transform.eulerAngles = new Vector3(0, 0, giroActual);
 
-        if (transform.position.y <= posicionPiso) 
+        if (transform.position.y <= posicionPiso)
         {
-            transform.position = new Vector2(transform.position.x, posicionPiso);
-
-            transform.localEulerAngles = new Vector3(0,0,0);
-
-            movimientoX = 0;
-            movimientoY = 0;
+            reiniciar();
+        }
+        else if (transform.position.x < minimaPosicionX
+            || transform.position.x > maximaPosicionX
+            || transform.position.y > maximaPosicionY)
+        {
+            reiniciar();
+            transform.position = posicionInicial;
         }
 	
 	}
+
+    private void reiniciar()
+    {
+        transform.position = new Vector2(transform.position.x, posicionPiso);
+
+        transform.localEulerAngles = new Vector3(0, 0, 0);
+
+        movimientoX = 0;
+        movimientoY = 0;
+    }
 
     private bool presionandoMotorIzquierdo()
     {
